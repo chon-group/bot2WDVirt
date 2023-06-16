@@ -8,6 +8,7 @@ public class Javino {
     byte[] preamble = new byte[4];
 
     byte[] sizeMessage = new byte[2];
+    private boolean last;
 
 
     public Javino(String portDescriptor){
@@ -16,14 +17,11 @@ public class Javino {
         this.serialPort.openPort();
     }
 
-    private void closePort(){
-        this.serialPort.closePort();
-    }
+    //public void openPort(){this.serialPort.openPort();}
+    //public void closePort(){this.serialPort.closePort();}
 
     public boolean availablemsg() {
-
             if (serialPort.readBytes(preamble,4) > 0){
-                //System.out.print(".*");
                 if (((preamble[0] & preamble[1] & preamble[2]) == 102) & (preamble[3] == 101 )){
                     if (serialPort.readBytes(sizeMessage,2) > 0){
                         int sizeOfMsg = Integer.parseUnsignedInt(new String(sizeMessage), 16);
@@ -35,7 +33,8 @@ public class Javino {
                     }
                 }
             }
-            return false;
+        System.out.print("\r" + (last ? ">" : " ")); last = !last;
+        return false;
     }
 
     public String getmsg(){

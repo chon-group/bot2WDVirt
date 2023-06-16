@@ -1,8 +1,10 @@
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JComboBox;
+import javax.swing.JSlider;
+import javax.swing.JLabel;
 
-public class ChonBot2WD extends JFrame{
+public class ChonBot2WD extends JFrame {
     private JPanel panelMain;
     private JComboBox cBoxAlert;
     private JComboBox cBoxBreakLight;
@@ -16,33 +18,13 @@ public class ChonBot2WD extends JFrame{
     private JLabel jlInfo;
     Javino javino = null;
 
-//    public ChonBot2WD() {
-//        //Update JScroll
-//        jtextComm.getDocument().addDocumentListener(new DocumentListener() {
-//            @Override
-//            public void insertUpdate(DocumentEvent e) {
-//                jtextComm.setCaretPosition(jtextComm.getDocument().getLength());
-//            }
-//
-//            @Override
-//            public void removeUpdate(DocumentEvent e) {
-//
-//            }
-//
-//            @Override
-//            public void changedUpdate(DocumentEvent e) {
-//
-//            }
-//        });
-//    }
-
     public String getStatus(){
         String out = "flashLight("+cBoxAlert.getSelectedItem()+");"+
                 "light("+cBoxLight.getSelectedItem()+");"+
                 "breakL("+cBoxBreakLight.getSelectedItem()+");"+
                 "buzzer("+cBoxBuzzer.getSelectedItem()+");"+
                 "luminosity("+jSliderLuminosity.getValue()+");"+
-                "distance("+jSliderDistance.getValue()+");"+
+                "distance("+jSliderDistance.getValue()/10+");"+
                 "motor("+cBoxMotorStatus.getSelectedItem()+");"+
                 "speed("+cBoxMotorSpeed.getSelectedItem()+");";
         serialMonitor("<-- " + out);
@@ -50,14 +32,12 @@ public class ChonBot2WD extends JFrame{
     }
 
     private void serialMonitor(String strSerial){
-        //jtextComm.append("\n"+strSerial);
-        //jlInfo.setText(strSerial);
         System.out.println(strSerial);
     }
     public void loop(){
             if(javino.availablemsg()){
                 String strMsg = javino.getmsg();
-                serialMonitor("--> "+strMsg);
+                serialMonitor("\r--> "+strMsg);
                 if(strMsg.equals("getPercepts"))javino.sendmsg(getStatus());
                 else if(strMsg.equals("buzzerOnH"))buzzer("high");
                 else if(strMsg.equals("buzzerOn"))buzzer("on");
@@ -129,15 +109,14 @@ public class ChonBot2WD extends JFrame{
         javino = new Javino(usbPort);
         setup(usbPort);
         while (true){
-            loop();
-//            try{
-//                Thread.sleep(100);
-//            }catch(Exception ex){
-//
-//            }
+            try{
+                loop();
+                Thread.sleep(100);
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
 
         }
-
     }
 
     private void setup(String strSerialPort){
